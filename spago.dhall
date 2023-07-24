@@ -10,8 +10,13 @@ When creating a new Spago project, you can use
 `spago init --no-comments` or `spago init -C`
 to generate this file without the comments in this block.
 -}
-{ name = "my-project"
-, dependencies = [ "console", "effect", "prelude" ]
+{ name = "purescript-drawf"
+, dependencies = [ "console"
+                 , "effect"
+                 , "prelude"
+                 , "free"
+                 , "exists"
+                 ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }
