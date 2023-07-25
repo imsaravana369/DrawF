@@ -11,12 +11,18 @@ When creating a new Spago project, you can use
 to generate this file without the comments in this block.
 -}
 { name = "purescript-drawf"
-, dependencies = [ "console"
-                 , "effect"
-                 , "prelude"
-                 , "free"
-                 , "exists"
-                 ]
+, dependencies =
+  [ "aff"
+  , "canvas"
+  , "console"
+  , "effect"
+  , "exists"
+  , "free"
+  , "newtype"
+  , "numbers"
+  , "prelude"
+  , "transformers"
+  ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }

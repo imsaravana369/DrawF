@@ -5,45 +5,41 @@ import Control.Monad.Free
 import Control.Monad.Free (Free, liftF)
 import Data.Newtype(class Newtype, wrap)
 import Data.Exists (Exists, mkExists)
-
-type RectangeProp = { length :: Int, width :: Int}
-type SquareProp = {side :: Int}
-
-type CircleProp = {radius :: Number}
-
-type CursorState = {x :: Int, y :: Int}
+import DrawF.Type
 
 
-data DrawF c nextF = SetCanas c nextF
-                   | DrawRectange RectangeProp nextF
-                   | DrawSquare SquareProp nextF
-                   | DrawCircle CircleProp nextF
-                   | GetCursorState (CursorState -> nextF)
+data DrawF a = ClearCanvas a
+             | DrawRectange RectangeProp a
+             | DrawSquare SquareProp a
+             | DrawCircle CircleProp a
+             | GetCursorState (CursorState -> a)
+             | MoveTo {x :: Number, y :: Number} a
 
-type DrawWrapper c = DrawF (Exists (DrawF c))
-newtype Draw c a = Draw (Free (DrawF c) a)
+newtype Draw a = Draw (Free DrawF a)
 
 
-derive instance newtypeDraw :: Newtype (Draw c a) _
+derive instance newtypeDraw :: Newtype (Draw a) _
 
-_wrapF :: forall c. (Unit -> DrawF c Unit) -> Draw c Unit
+_wrapF :: forall a. (Unit -> DrawF Unit) -> Draw Unit
 _wrapF fn = wrap <<< liftF $ fn unit
 
-wrapF :: forall c nextF. DrawF c nextF -> Draw c nextF
+wrapF :: forall a. DrawF a -> Draw a
 wrapF = wrap <<< liftF
 
-createCanvas :: forall c.  c -> Draw c Unit
-createCanvas = _wrapF <<<  SetCanas
+clearCanvas :: Draw Unit
+clearCanvas = _wrapF ClearCanvas
 
-drawRectangle :: forall c.  RectangeProp -> Draw c Unit
+drawRectangle :: RectangeProp -> Draw Unit
 drawRectangle = _wrapF <<< DrawRectange 
 
-drawSquare :: forall c.  SquareProp -> Draw c Unit
+drawSquare :: SquareProp -> Draw Unit
 drawSquare = _wrapF <<< DrawSquare
 
-drawCircle :: forall c.  CircleProp -> Draw c Unit
+drawCircle :: CircleProp -> Draw Unit
 drawCircle = _wrapF <<< DrawCircle
 
-
-getCursorState :: forall c. Draw c CursorState
+getCursorState :: Draw CursorState
 getCursorState = wrapF $ GetCursorState identity
+
+moveTo :: {x :: Number, y :: Number} -> Draw Unit
+moveTo = _wrapF <<< MoveTo
